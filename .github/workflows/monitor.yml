@@ -1,0 +1,25 @@
+name: 中大化院讲座监控
+on:
+  schedule:
+    # 这里是UTC时间，'0 */2 * * *' 表示每2小时运行一次
+    # 如果想调整频率，可以修改这个表达式
+    - cron: '0 */2 * * *'
+  workflow_dispatch: # 允许你手动触发测试
+jobs:
+  check-lectures:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 安装依赖
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: 运行监控脚本
+        env:
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+        run: python main.py
