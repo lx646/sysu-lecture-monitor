@@ -3,7 +3,7 @@ on:
   schedule:
     # 这里是UTC时间，'0 */2 * * *' 表示每2小时运行一次
     # 如果想调整频率，可以修改这个表达式
-    - cron: '0 */2 * * *'
+    - cron: '0 0 * * *'
   workflow_dispatch: # 允许你手动触发测试
 jobs:
   check-lectures:
@@ -23,3 +23,10 @@ jobs:
         env:
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
         run: python main.py
+      - name: 保存历史记录 (防止重复推送)
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add history.txt
+          git diff --staged --quiet || git commit -m "自动更新历史记录"
+          git push
